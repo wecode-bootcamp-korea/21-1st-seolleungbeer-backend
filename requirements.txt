@@ -1,0 +1,34 @@
+appnope==0.1.2
+asgiref==3.3.4
+astroid @ file:///opt/concourse/worker/volumes/live/343a8902-287c-47fb-6db8-923a63364302/volume/astroid_1613500849157/work
+backcall==0.2.0
+bcrypt==3.2.0
+certifi==2020.12.5
+cffi==1.14.5
+decorator==5.0.9
+Django==3.2.3
+django-cors-headers==3.7.0
+ipython==7.23.1
+ipython-genutils==0.2.0
+isort @ file:///tmp/build/80754af9/isort_1616355431277/work
+jedi==0.18.0
+lazy-object-proxy @ file:///opt/concourse/worker/volumes/live/e4bc3ba3-f365-4387-5772-cbb667714c62/volume/lazy-object-proxy_1616529072711/work
+matplotlib-inline==0.1.2
+mccabe==0.6.1
+mysqlclient==2.0.3
+parso==0.8.2
+pexpect==4.8.0
+pickleshare==0.7.5
+prompt-toolkit==3.0.18
+ptyprocess==0.7.0
+pycparser==2.20
+Pygments==2.9.0
+PyJWT==2.1.0
+pylint @ file:///opt/concourse/worker/volumes/live/39bfc6db-5da7-4bc4-5240-e8a1167491ff/volume/pylint_1617135827184/work
+pytz==2021.1
+six==1.16.0
+sqlparse==0.4.1
+toml @ file:///tmp/build/80754af9/toml_1616166611790/work
+traitlets==5.0.5
+wcwidth==0.2.5
+wrapt @ file:///opt/concourse/worker/volumes/live/e3646d84-e961-4523-6bed-01532273c57e/volume/wrapt_1597851473852/work
