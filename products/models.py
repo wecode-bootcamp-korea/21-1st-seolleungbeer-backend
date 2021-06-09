@@ -8,7 +8,7 @@ class Category(models.Model):
         db_table = 'categories'
 
 class SubCategory(models.Model):
-    sub_name = models.CharField(max_length=50, unique=True)
+    name     = models.CharField(max_length=50, unique=True)
     category = models.ForeignKey('Category', on_delete=CASCADE)
 
     class Meta:
@@ -20,7 +20,7 @@ class Product(models.Model):
     price        = models.DecimalField(max_digits=10, decimal_places=2)
     description  = models.CharField(max_length=100, unique=True)
     sub_category = models.ForeignKey('SubCategory', on_delete=CASCADE)
-    product_info = models.OneToOneField('ProductInfo', on_delete=CASCADE, default='')
+    product_info = models.OneToOneField('ProductInfo', on_delete=CASCADE)
 
     class Meta:
         db_table = 'products'
@@ -37,8 +37,7 @@ class ProductInfo(models.Model):
         db_table = 'product_infos'
 
 class ImageType(models.Model):
-    type    = models.CharField(max_length=50, default='')
-    product = models.ManyToManyField('Product', through='ProductImage')
+    type = models.CharField(max_length=50)
 
     class Meta:
         db_table = 'image_types'

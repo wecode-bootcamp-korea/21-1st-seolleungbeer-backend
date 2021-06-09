@@ -9,8 +9,8 @@ class Order(models.Model):
     delivery_memo       = models.CharField(max_length=100, null=True)
     payment_information = models.CharField(max_length=50, null=True)
     payment_charge      = models.CharField(max_length=50, null=True)
-    user                = models.ForeignKey('users.User', on_delete=CASCADE, default='')
-    order_status        = models.ForeignKey('OrderStatus', on_delete=CASCADE, default='')
+    user                = models.ForeignKey('users.User', on_delete=CASCADE)
+    order_status        = models.ForeignKey('OrderStatus', on_delete=CASCADE)
 
     class Meta:
         db_table = 'orders'

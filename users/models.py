@@ -7,7 +7,7 @@ class User(models.Model):
     password      = models.CharField(max_length=100)
     email         = models.CharField(max_length=50, unique=True)
     mobile        = models.CharField(max_length=50, unique=True)
-    profile_image = models.CharField(max_length=200, blank=True)
+    profile_image = models.CharField(max_length=200, null=True)
     like          = models.ManyToManyField('products.Product', through='Like')
 
     class Meta:
