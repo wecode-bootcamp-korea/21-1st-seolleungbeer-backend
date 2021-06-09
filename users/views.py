@@ -12,14 +12,11 @@ class SignupView(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
-            
+
             bcrypt_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
             password_regx = re.compile("^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{10,}$")
             email_regex   = re.compile('^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
-
-            if User.objects.filter(email = data['email']).exists():
-                return JsonResponse({'message': 'EMAIL_EXIST'}, status=400)
 
             if User.objects.filter(mobile = data['mobile']).exists():
                 return JsonResponse({'message': 'MOBILE_EXIST'}, status=400)
@@ -66,6 +63,19 @@ class LoginView(View):
             token = jwt.encode({'user_id': db_email.id}, SECRET_KEY, ALGORITHM)
             
             return JsonResponse({'token': token, 'message': 'SUCCESS'}, status=200)
+
+        except KeyError:
+            return JsonResponse({'message': 'KEY_ERROR'}, status=400)
+
+class EmailCheckView(View):
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+
+            if User.objects.filter(email = data['email']).exists():
+                return JsonResponse({'message': 'EMAIL_EXIST'}, status=400)
+
+            return JsonResponse({'message': 'SUCCESS'}, status=200)
 
         except KeyError:
             return JsonResponse({'message': 'KEY_ERROR'}, status=400)
