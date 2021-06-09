@@ -2,14 +2,13 @@ from django.db                 import models
 from django.db.models.deletion import CASCADE
 
 class User(models.Model):
-    sex                = models.IntegerField()
-    name               = models.CharField(max_length=50)
-    password           = models.CharField(max_length=100)
-    email              = models.CharField(max_length=50, unique=True)
-    mobile             = models.CharField(max_length=50, unique=True)
-    profile_image      = models.CharField(max_length=200, blank=True)
-    product_like       = models.ManyToManyField('products.Product', through='Like', related_name='product_like')
-    product_order_item = models.ManyToManyField('products.Product', through='orders.OrderItem', related_name='product_order_item')
+    sex           = models.CharField(max_length=50)
+    name          = models.CharField(max_length=50)
+    password      = models.CharField(max_length=100)
+    email         = models.CharField(max_length=50, unique=True)
+    mobile        = models.CharField(max_length=50, unique=True)
+    profile_image = models.CharField(max_length=200, blank=True)
+    like          = models.ManyToManyField('products.Product', through='Like')
 
     class Meta:
         db_table = 'users'                                                                                                                                                              
