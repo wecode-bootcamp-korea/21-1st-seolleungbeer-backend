@@ -28,7 +28,7 @@ class Product(models.Model):
 class ProductInfo(models.Model):
     meterial     = models.CharField(max_length=50)
     size         = models.CharField(max_length=50)
-    manufaturer  = models.CharField(max_length=50)
+    manufacturer = models.CharField(max_length=50)
     made         = models.CharField(max_length=50)
     distributor  = models.CharField(max_length=50)
     afterservice = models.CharField(max_length=50)

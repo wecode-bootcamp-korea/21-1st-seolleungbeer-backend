@@ -8,13 +8,13 @@ class User(models.Model):
     email         = models.CharField(max_length=50, unique=True)
     mobile        = models.CharField(max_length=50, unique=True)
     profile_image = models.CharField(max_length=200, blank=True)
-    likes          = models.ManyToManyField('products.Product', through='Like', related_name='likes')
+    like          = models.ManyToManyField('products.Product', through='Like')
 
     class Meta:
         db_table = 'users'                                                                                                                                                              
 
 class Like(models.Model):
-    user    = models.ForeignKey('User', on_delete=CASCADE)
+    user    = models.ForeignKey(User, on_delete=CASCADE, related_name='like_user')
     product = models.ForeignKey('products.Product', on_delete=CASCADE)
 
     class Meta:
