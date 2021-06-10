@@ -4,7 +4,7 @@ from django.views import View
 from django.http  import JsonResponse
 from django.db    import IntegrityError
 
-from .models import User
+from .models      import User
 
 class SignupView(View):
     def post(self, request):
@@ -38,6 +38,3 @@ class SignupView(View):
 
         except KeyError:
             return JsonResponse({'message': 'KEY_ERROR'}, status=400)
-
-        except IntegrityError:
-            return JsonResponse({'message': 'INTEGRITY_ERROR'}, status=400) 
