@@ -1,13 +1,10 @@
 import json, re, bcrypt, jwt
-from django.http.response import JsonResponse
 
-from django.views import View
-from django.http  import JsonResponse
+from django.views           import View
+from django.http            import JsonResponse
 
 from .models                import User
 from seolleungbeer.settings import SECRET_KEY, ALGORITHM
-
-from .utils import user_decorator
 
 class SignupView(View):
     def post(self, request):
@@ -70,7 +67,6 @@ class LoginView(View):
             return JsonResponse({'message': 'KEY_ERROR'}, status=400)
 
 class EmailCheckView(View):
-    @user_decorator
     def post(self, request):
         try:
             data = json.loads(request.body)
