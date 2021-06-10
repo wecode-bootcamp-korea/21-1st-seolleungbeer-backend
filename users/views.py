@@ -15,8 +15,9 @@ class SignupView(View):
 
             bcrypt_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
-            password_regx = re.compile("^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{10,}$")
+            password_regx = re.compile('^.*(?=^.{10,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$')
             email_regex   = re.compile('^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
+            mobile_regex  = re.compile('^[0-9]{10,11}$')
 
             if User.objects.filter(mobile = data['mobile']).exists():
                 return JsonResponse({'message': 'MOBILE_EXIST'}, status=400)
@@ -26,6 +27,9 @@ class SignupView(View):
             
             if not password_regx.match(data['password']):
                 return JsonResponse({'message':'INVALID_PASSWORD'}, status=400)
+
+            if not mobile_regex.match(data['mobile']):
+                return JsonResponse({'message': 'INVALID_MOBILE'}, status=400)
 
             User.objects.create(
                 sex      = data['sex'],
