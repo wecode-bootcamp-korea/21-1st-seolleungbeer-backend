@@ -25,15 +25,14 @@ class ProductDetail(View):
                     }for image in images],
 
                 'info'         :{
-                    'meterial'     : product.product_info.meterial,
-                    'size'         : product.product_info.size,
-                    'manufacturer' : product.product_info.manufacturer,
-                    'made'         : product.product_info.made,
-                    'distributor'  : product.product_info.distributor,
-                    'afterservice' : product.product_info.afterservice
+                'meterial'     : product.product_info.meterial,
+                'size'         : product.product_info.size,
+                'manufacturer' : product.product_info.manufacturer,
+                'made'         : product.product_info.made,
+                'distributor'  : product.product_info.distributor,
+                'afterservice' : product.product_info.afterservice
                 }}
 
             return JsonResponse({'result':result},status=200)
-
         except KeyError:
             return JsonResponse({'message':'KEY_ERROR'},status=400)
