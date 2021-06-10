@@ -5,7 +5,7 @@
 {
     "python.pythonPath": "/home/hwang/miniconda3/envs/wecode/bin/python"
 }
-
+db_uploader.py
 my_settings.py
 
 ### Django ###
