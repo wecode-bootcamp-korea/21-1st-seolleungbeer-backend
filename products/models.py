@@ -18,7 +18,7 @@ class Product(models.Model):
     korean_name  = models.CharField(max_length=50, unique=True)
     english_name = models.CharField(max_length=50, unique=True)
     price        = models.DecimalField(max_digits=10, decimal_places=2)
-    description  = models.CharField(max_length=100, unique=True)
+    description  = models.CharField(max_length=250, unique=True)
     sub_category = models.ForeignKey('SubCategory', on_delete=CASCADE)
     product_info = models.OneToOneField('ProductInfo', on_delete=CASCADE)
 
