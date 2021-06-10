@@ -13,7 +13,6 @@ class ProductDetail(View):
 
             product = Product.objects.get(id=product_id)
 
-            images = product.productimage_set.all()
             result={
                 'korean_name'  : product.korean_name,
                 'english_name' : product.english_name,
@@ -22,7 +21,7 @@ class ProductDetail(View):
                 'image'        :[{
                     'image_url'  : image.image_url,
                     'image_type' : image.image_type.type
-                    }for image in images],
+                    }for image in product.productimage_set.all()],
 
                 'info'         :{
                 'meterial'     : product.product_info.meterial,
