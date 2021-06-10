@@ -1,11 +1,10 @@
 import json, re
-from django.http.response import JsonResponse
 
 from django.views import View
 from django.http  import JsonResponse
 from django.db    import IntegrityError
 
-from .models      import User
+from .models import User
 
 class SignupView(View):
     def post(self, request):
@@ -22,7 +21,7 @@ class SignupView(View):
                 return JsonResponse({'message': 'MOBILE_EXIST'}, status=400)
 
             if not email_regex.match(data['email']):
-                return JsonResponse({'message':'PLEASE ENTER @ OR .'}, status=400)
+                return JsonResponse({'message':'INVALID_EMAIL'}, status=400)
 
             if not password_regx.match(data['password']):
                 return JsonResponse({'message':'INVALID_PASSWORD'}, status=400)
