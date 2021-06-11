@@ -11,7 +11,7 @@ class User(models.Model):
     like          = models.ManyToManyField('products.Product', through='Like')
 
     class Meta:
-        db_table = 'users'                                                                                                                                                              
+        db_table = 'users'
 
 class Like(models.Model):
     user    = models.ForeignKey(User, on_delete=CASCADE, related_name='like_user')
