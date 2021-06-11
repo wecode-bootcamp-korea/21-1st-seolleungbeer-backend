@@ -8,17 +8,18 @@ class ProductListView(View):
     def get(self, request):
         try:        
             # get_query_parameter
-            page = request.GET.get('page')
-            category = request.GET.get('category')
+            offset        = int(request.GET.get('offset') or 0)
+            limit         = int(request.GET.get('limit') or 6)
+            category      = request.GET.get('category')
             subcategories = request.GET.get('subcategory')
     
             # filtering
             products = []
 
-            if category == None or category == '':
+            if category == '' or category == None:
                 products = Product.objects.all()
             
-            elif subcategories == None or subcategories == '':
+            elif subcategories == '' or subcategories == None:
                 category = Category.objects.get(name=category)
                 subcategories = SubCategory.objects.filter(category=category)
 
@@ -35,28 +36,30 @@ class ProductListView(View):
                 for product in products_in_sub:
                     products.append(product)            
             
-            # paging
-            products_bypage = Paginator(products, 4)
-            page = int(page or 0) + bool(not page)
-                
+            #paging 다시
+            products_in_page = products[offset:(offset+limit)]
+            print(offset,limit)
+            print(products_in_page)
+
             # make_response
             result = {}
             result_list = []
 
-            for product in products_bypage.page(page):
+            for product in products_in_page:
                 
-                #쿼리셋 말고 object 반환하게 해서 간단하게 만들자
-                # image = ProductImage.objects.get(product=product, image_type='1000*1000')
+                p = Product.objects.get(korean_name="선릉탈출 보드게임")
+                image = ProductImage.objects.get(product=p, image_type_id=1)
                 
                 result = {
+                    'id'           : product.id,
                     'korean_name'  : product.korean_name,
                     'english_name' : product.english_name,
                     'price'        : product.price,
-                    # 'image'        : image
+                    'image'        : image.image_url
                 }
                 result_list.append(result)
             
-            return JsonResponse({'message':result}, status=200)
+            return JsonResponse(result_list, status=200, safe=False)
         
         except Category.DoesNotExist:
             return JsonResponse({'message':'DoesNotExist, category'}, status=400)
@@ -80,7 +83,7 @@ class ProductListView(View):
             return JsonResponse({'message':'MultipleObjects, image'}, status=400)
 
         except EmptyPage:
-            return JsonResponse({'message':'EmptyPage'}, status=400)
+            return JsonResponse({'message':'EmptyPage'}, status=404)
 
 class CategoryViw(View):
     def get(self, request):
@@ -140,7 +143,7 @@ class CategoryViw(View):
 
 # 4. 이미지 없는 경우, 디폴트 이미지를 보내주는 것이 나은가 아니면 이미지Key/Value를 아예 빼고 보내주는 것이 나은가?
 
-# 기본 url: /products
+# 기본 url: /shop
 
 # 1) 'SHOP' 메뉴를 클릭한 경우 param 없음(카테/서브/페이지 전부)
 # /products
@@ -164,12 +167,12 @@ class CategoryViw(View):
 # '페이지'를 클릭한 이후 param 항상 있음(카테,서브,페이지 전부)
 # 카테,서브 디폴트는 빈스트링, 페이지 디폴트는 1
 # /products?category=&subcategory=&page=1
-# 3-1) 페이지 넘어갈 경우, 페이지 바뀜
-# /products?category=&subcategory=&page=3
+# 3-1) LOAD MORE 클릭했을 경우, 페이지 추가됨
+# /products?category=&subcategory=&page=3&page=4
 # 3-2) 다시 1페이지를 누를 경우, 페이지 = 1
 # /products?category=&subcategory=&page=1
 
-# 에러처리: EmptyPage인 경우 >> "페이지가 없습니다" 알럿 후 상품디폴트페이지로 리다이렉트
+# 에러처리: EmptyPage인 경우(오류) >> "페이지가 없습니다" 알럿 후 상품디폴트페이지로 리다이렉트 ??
 
 # PR전 최종 점검
 # 컨벤션은 push하기 직전에 최종적으로 맞추고 올리자
