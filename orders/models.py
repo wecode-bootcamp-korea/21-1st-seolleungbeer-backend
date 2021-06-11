@@ -13,7 +13,8 @@ class Order(models.Model):
     payment_charge      = models.CharField(max_length=50, null=True)
     user                = models.ForeignKey('users.User', on_delete=CASCADE)
     order_status        = models.ForeignKey('OrderStatus', on_delete=CASCADE)
-
+    product             = models.ManyToManyField('products.Product', through='OrderItem')
+    
     class Meta:
         db_table = 'orders'
 
@@ -25,7 +26,7 @@ class OrderStatus(models.Model):
 
 class OrderItem(models.Model):
     amount  = models.IntegerField()
-    product = models.OneToOneField('products.Product', on_delete=CASCADE)
+    product = models.ForeignKey('products.Product', on_delete=CASCADE)
     order   = models.ForeignKey('Order', on_delete=CASCADE)
 
     class Meta:
