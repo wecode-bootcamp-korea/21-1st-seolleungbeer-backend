@@ -14,12 +14,12 @@ class EmailCheckView(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
-
-            if User.objects.filter(email = data['email']).exists():
-                return JsonResponse({'message': 'EMAIL_EXIST'}, status=400)
             
             if not email_regex.match(data['email']):
                 return JsonResponse({'message':'INVALID_EMAIL'}, status=400)
+                
+            if User.objects.filter(email = data['email']).exists():
+                return JsonResponse({'message': 'EMAIL_EXIST'}, status=400)
 
             return JsonResponse({'message': 'SUCCESS'}, status=200)
 
@@ -30,12 +30,12 @@ class MobileCheckView(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
-           
-            if User.objects.filter(mobile = data['mobile']).exists():
-                return JsonResponse({'message': 'MOBILE_EXIST'}, status=400)
-            
+                       
             if not mobile_regex.match(data['mobile']):
                 return JsonResponse({'message': 'INVALID_MOBILE'}, status=400)
+
+            if User.objects.filter(mobile = data['mobile']).exists():
+                return JsonResponse({'message': 'MOBILE_EXIST'}, status=400)
 
             return JsonResponse({'message': 'SUCCESS'}, status=200)
 
