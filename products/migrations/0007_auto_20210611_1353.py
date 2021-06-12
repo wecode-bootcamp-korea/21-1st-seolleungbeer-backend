@@ -9,16 +9,3 @@ class Migration(migrations.Migration):
         ('products', '0006_auto_20210611_1329'),
     ]
 
-    operations = [
-
-        migrations.AlterField(
-            model_name='category',
-            name='korean_name',
-            field=models.CharField(max_length=50, unique=True),
-        ),
-        migrations.AlterField(
-            model_name='subcategory',
-            name='korean_name',
-            field=models.CharField(max_length=50, unique=True),
-        ),
-    ]

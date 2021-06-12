@@ -9,10 +9,4 @@ class Migration(migrations.Migration):
         ('products', '0005_auto_20210610_1637'),
     ]
 
-    operations = [
-        migrations.AlterField(
-            model_name='product',
-            name='description',
-            field=models.CharField(max_length=250, unique=True),
-        ),
-    ]
+
