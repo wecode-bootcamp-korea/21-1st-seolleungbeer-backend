@@ -30,10 +30,10 @@ class MobileCheckView(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
-                       
+            
             if not mobile_regex.match(data['mobile']):
                 return JsonResponse({'message': 'INVALID_MOBILE'}, status=400)
-
+           
             if User.objects.filter(mobile = data['mobile']).exists():
                 return JsonResponse({'message': 'MOBILE_EXIST'}, status=400)
 
