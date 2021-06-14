@@ -7,6 +7,40 @@ from .models                import User
 from seolleungbeer.settings import SECRET_KEY, ALGORITHM
 
 password_regx = re.compile('^.*(?=^.{10,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$')
+email_regex   = re.compile('^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
+mobile_regex  = re.compile('^[0-9]{10,11}$')
+
+class EmailCheckView(View):
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            
+            if not email_regex.match(data['email']):
+                return JsonResponse({'message':'INVALID_EMAIL'}, status=400)
+                
+            if User.objects.filter(email = data['email']).exists():
+                return JsonResponse({'message': 'EMAIL_EXIST'}, status=400)
+
+            return JsonResponse({'message': 'SUCCESS'}, status=200)
+
+        except KeyError:
+            return JsonResponse({'message': 'KEY_ERROR'}, status=400)
+
+class MobileCheckView(View):
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            
+            if not mobile_regex.match(data['mobile']):
+                return JsonResponse({'message': 'INVALID_MOBILE'}, status=400)
+           
+            if User.objects.filter(mobile = data['mobile']).exists():
+                return JsonResponse({'message': 'MOBILE_EXIST'}, status=400)
+
+            return JsonResponse({'message': 'SUCCESS'}, status=200)
+
+        except KeyError:
+            return JsonResponse({'message': 'KEY_ERROR'}, status=400)
 
 class SignupView(View):
     def post(self, request):
