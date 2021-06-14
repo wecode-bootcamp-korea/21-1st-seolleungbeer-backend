@@ -8,16 +8,18 @@ from orders.models   import OrderStatus, Order, OrderItem
 from users.models    import User
 from products.models import Product
 
+from users.utils            import user_decorator
 class CartView(View):
+    @user_decorator
     def post(self, request):
         try:
             data = json.loads(request.body)
-
-            user           = User.objects.get(email=data['email'])
+            user           = request.user
             order_status   = OrderStatus.objects.get(status="장바구니")
             product        = Product.objects.get(korean_name=data['korean_name'])
             current_amount = 0
 
+            #상품금액 변경할때 
             if not Order.objects.filter(order_number=data['order_number']).exists():
                 current_charge = 0
             else:
