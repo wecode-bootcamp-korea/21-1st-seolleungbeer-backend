@@ -20,7 +20,7 @@ class Product(models.Model):
     korean_name  = models.CharField(max_length=50, unique=True)
     english_name = models.CharField(max_length=50, unique=True)
     price        = models.DecimalField(max_digits=10, decimal_places=2)
-    description  = models.CharField(max_length=255, unique=True)
+    description  = models.TextField()
     sub_category = models.ForeignKey('SubCategory', on_delete=CASCADE)
     product_info = models.OneToOneField('ProductInfo', on_delete=CASCADE)
 
@@ -45,7 +45,7 @@ class ImageType(models.Model):
         db_table = 'image_types'
 
 class ProductImage(models.Model):
-    image_url  = models.CharField(max_length=200)
+    image_url  = models.CharField(max_length=255)
     product    = models.ForeignKey('Product', on_delete=CASCADE)
     image_type = models.ForeignKey('ImageType', on_delete=CASCADE)
 
