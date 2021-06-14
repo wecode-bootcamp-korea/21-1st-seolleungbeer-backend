@@ -10,13 +10,20 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-
-        migrations.AlterField(
+        migrations.RemoveField(
+            model_name='category',
+            name='korean_name',
+        ),
+        migrations.RemoveField(
+            model_name='subcategory',
+            name='korean_name',
+        ),
+        migrations.AddField(
             model_name='category',
             name='korean_name',
             field=models.CharField(max_length=50, unique=True),
         ),
-        migrations.AlterField(
+        migrations.AddField(
             model_name='subcategory',
             name='korean_name',
             field=models.CharField(max_length=50, unique=True),
