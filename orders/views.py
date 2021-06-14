@@ -4,11 +4,12 @@ from django.http      import JsonResponse
 from django.views     import View
 from django.db.models import Q 
 
-from orders.models   import OrderStatus, Order, OrderItem
-from users.models    import User
-from products.models import Product
+from orders.models    import OrderStatus, Order, OrderItem
+from users.models     import User
+from products.models  import Product
 
-from users.utils            import user_decorator
+from users.utils      import user_decorator
+
 class CartView(View):
     @user_decorator
     def post(self, request):
@@ -19,7 +20,6 @@ class CartView(View):
             product        = Product.objects.get(korean_name=data['korean_name'])
             current_amount = 0
 
-            #상품금액 변경할때 
             if not Order.objects.filter(order_number=data['order_number']).exists():
                 current_charge = 0
             else:
