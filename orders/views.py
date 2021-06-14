@@ -4,14 +4,14 @@ from django.http     import JsonResponse
 from .models         import Order, OrderItem
 from products.models import ProductImage
 
-# from users.utils import user_decorator
+from users.utils import user_decorator
 
 class CartView(View):
-    # @user_decorator
+    @user_decorator
     def get(self, request):
         try:
             user       = request.user
-            order_item = OrderItem.objects.filter(orders_user = user, order_statuses_status = '주문 전')
+            order_item = OrderItem.objects.filter(orders__user = user, order__order_status__status = '주문 전')
 
             for carts in order_item:
                 carts_list = {
