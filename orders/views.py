@@ -1,7 +1,7 @@
 from django.views    import View
 from django.http     import JsonResponse
 
-from .models         import Order, OrderItem
+from .models         import OrderItem, OrderStatus
 from users.utils     import user_decorator
 
 class CartView(View):
@@ -9,7 +9,7 @@ class CartView(View):
     def get(self, request):
         try:
             user       = request.user
-            order_item = OrderItem.objects.filter(order__user = user, order__order_status__status="주문 전")
+            order_item = OrderItem.objects.filter(order__user = user, order__order_status_id=OrderStatus.PENDING)
             result     = []
 
             for carts in order_item:
@@ -26,5 +26,5 @@ class CartView(View):
 
             return JsonResponse({'message':'SUCCESS', 'result':result}, status=200)
         
-        except Order.DoesNotExist:
+        except OrderItem.DoesNotExist:
             return JsonResponse({'message': 'NOTHING_IN_CART'}, status=400)
