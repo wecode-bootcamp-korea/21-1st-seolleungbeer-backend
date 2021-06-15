@@ -9,3 +9,26 @@ class Migration(migrations.Migration):
         ('products', '0006_auto_20210611_1329'),
     ]
 
+<<<<<<< HEAD
+=======
+    operations = [
+        migrations.RemoveField(
+            model_name='category',
+            name='korean_name',
+        ),
+        migrations.RemoveField(
+            model_name='subcategory',
+            name='korean_name',
+        ),
+        migrations.AddField(
+            model_name='category',
+            name='korean_name',
+            field=models.CharField(max_length=50, unique=True),
+        ),
+        migrations.AddField(
+            model_name='subcategory',
+            name='korean_name',
+            field=models.CharField(max_length=50, unique=True),
+        ),
+    ]
+>>>>>>> main
