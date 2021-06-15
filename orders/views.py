@@ -29,6 +29,7 @@ class CartView(View):
 
             if OrderItem.objects.filter(order=order, product_id=product).exists():
                 current_amount = OrderItem.objects.get(order=order, product_id=product).amount
+                
             orderitem, created = OrderItem.objects.update_or_create(
                         order      = order,
                         product_id = product,
