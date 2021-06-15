@@ -1,6 +1,6 @@
-from itertools             import chain
+from itertools                    import chain
 from django.db.models.expressions import OuterRef
-from django.db.models.fields import CharField
+from django.db.models.fields      import CharField
 from django.db.models.query_utils import subclasses
 
 from django.views          import View
@@ -8,7 +8,7 @@ from django.http           import JsonResponse
 from django.core.paginator import EmptyPage
 from django.db.models      import Q, When, Case, Exists,Value
 
-from .models import Category, SubCategory, Product, ProductInfo, ProductImage, ImageType
+from .models import Category, Product
 
 class CategoryListView(View):
     def get(self, request):
@@ -27,32 +27,27 @@ class ProductListView(View):
         category      = request.GET.get('category')
         subcategories = request.GET.get('subcategory')
 
+        q = Q()
         if subcategories:
-            q = Q(sub_category__english_name=subcategories)
-            print(q)
+            q &= Q(sub_category__english_name=subcategories)
         elif category:
-            q = Q(sub_category__category__english_name=category)
-        else:
-            q = Q()
+            q &= Q(sub_category__category__english_name=category)
 
         products         = Product.objects.filter(q).order_by('id')
         products_in_page = products[offset:(offset+limit)]
-        message          = int(products.count() <= (offset+limit))
-        result           = {}
-        result_list      = []
+        is_last_page     = products.count() <= (offset+limit)
 
-        for product in products_in_page:
-            image     = product.productimage_set.filter(image_type__type="1000*1000").first()
-            image_url = image.image_url if image else image
-            result    = {
+        result_list = [
+            {
                 'id'           : product.id,
                 'korean_name'  : product.korean_name,
                 'english_name' : product.english_name,
                 'price'        : product.price,
-                'image'        : image_url
+                'image'        : getattr(product.productimage_set.filter(image_type__type="1000*1000").first(),'image_url',None)
             }
-            result_list.append(result)
-        return JsonResponse({'message':message, 'content':result_list}, status=200)
+            for product in products_in_page]
+            
+        return JsonResponse({'is_last_page':is_last_page, 'content':result_list}, status=200)
 
 class ProductDetail(View):
     def get(self, request, product_id):
