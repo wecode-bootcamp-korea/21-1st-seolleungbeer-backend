@@ -16,8 +16,7 @@ class CategoryListView(View):
         result     = {}
 
         for category in categories:
-            subcategories = SubCategory.objects.filter(category=category)
-            result[category.english_name] = [sub.english_name for sub in subcategories]
+            result[category.english_name] = [sub.english_name for sub in category.sub_category_set.all()]
 
         return JsonResponse(result, status=200)
 
