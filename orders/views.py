@@ -9,11 +9,11 @@ class CartView(View):
     def get(self, request):
         try:
             user       = request.user
-            order_item = OrderItem.objects.filter(order__user = user, order__order_status_id=OrderStatus.PENDING)
-            result     = []
-
-            for carts in order_item:
-                carts_list = {
+            order_item = OrderItem.objects.filter(
+                order__user            = user, 
+                order__order_status_id = OrderStatus.PENDING
+            )
+            result     = [{
                     'cart_id'         : carts.id,
                     'amount'          : carts.amount,
                     'korean_name'     : carts.product.korean_name,
@@ -21,8 +21,7 @@ class CartView(View):
                     'delivery_charge' : carts.order.delivery_charge,
                     'payment_charge'  : carts.product.price,
                     'delivery_method' : carts.order.delivery_method
-                }
-                result.append(carts_list)
+                } for carts in order_item]
 
             return JsonResponse({'message':'SUCCESS', 'result':result}, status=200)
         

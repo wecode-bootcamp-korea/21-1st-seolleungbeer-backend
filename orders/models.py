@@ -17,7 +17,7 @@ class Order(models.Model):
         db_table = 'orders'
 
 class OrderStatus(models.Model):
-    PENDING = 3
+    PENDING = 1
     PAIDED  = 2
     status  = models.CharField(max_length=50)
 
