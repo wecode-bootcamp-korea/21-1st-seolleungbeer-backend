@@ -22,22 +22,20 @@ class CartView(View):
                 return JsonResponse({'message':'PRODUCT_DOES_NOT_EXIST'}, status=400)
 
             order, created = Order.objects.get_or_create(
-                        delivery_charge     = 0.0,
-                        payment_charge      = 0.0,
-                        user                = user,
-                        order_status_id     = OrderStatus.PENDING,
-                        defaults={'order_number':uuid.uuid4()}
+                        user            = user,
+                        order_status_id = OrderStatus.PENDING,
+                        defaults        = {'order_number':uuid.uuid4()}
                     )
 
-            if OrderItem.objects.filter(order=order , product_id=product).exists():
-                current_amount = OrderItem.objects.get(order=order ,product_id = product).amount
-            OrderItem.objects.update_or_create(
-                    order    = order,
-                    product_id  = product,
-                    defaults = {'amount':data['amount'] + current_amount},
-                    )
+            if OrderItem.objects.filter(order=order, product_id=product).exists():
+                current_amount = OrderItem.objects.get(order=order, product_id=product).amount
+            orderitem, created = OrderItem.objects.update_or_create(
+                        order      = order,
+                        product_id = product,
+                        defaults   = {'amount':data['amount'] + current_amount},
+                        )
 
-            return JsonResponse({'message':"SUCCESS","order_number":order.order_number},status=200)
+            return JsonResponse({'message':"SUCCESS", "order_number":order.order_number, "id":orderitem.id},status=200)
 
         except KeyError:
             return JsonResponse({'message':'KEY_ERROR'},status=400)
