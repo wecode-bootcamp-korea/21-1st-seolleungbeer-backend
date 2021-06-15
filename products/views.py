@@ -30,21 +30,22 @@ class ProductListView(View):
 
         if subcategories:
             q = Q(sub_category__english_name=subcategories)
+            print(q)
         elif category:
             q = Q(sub_category__category__english_name=category)
         else:
             q = Q()
 
-        products = Product.objects.filter(q).order_by('id')
+        products         = Product.objects.filter(q).order_by('id')
         products_in_page = products[offset:(offset+limit)]
-        message = int(products.count() <= (offset+limit))
-        result = {}
-        result_list = []
+        message          = int(products.count() <= (offset+limit))
+        result           = {}
+        result_list      = []
 
         for product in products_in_page:
-            image = product.productimage_set.filter(image_type__type="1000*1000").first()
+            image     = product.productimage_set.filter(image_type__type="1000*1000").first()
             image_url = image.image_url if image else image
-            result = {
+            result    = {
                 'id'           : product.id,
                 'korean_name'  : product.korean_name,
                 'english_name' : product.english_name,
@@ -52,8 +53,7 @@ class ProductListView(View):
                 'image'        : image_url
             }
             result_list.append(result)
-
-        return JsonResponse({'message':message, 'result':result_list}, status=200)
+        return JsonResponse({'message':message, 'content':result_list}, status=200)
 
 class ProductDetail(View):
     def get(self, request, product_id):
@@ -71,7 +71,9 @@ class ProductDetail(View):
                 'image'        :[{
                     'image_url'  : image.image_url,
                     'image_type' : image.image_type.type
-                    }for image in product.productimage_set.all()],
+                    }
+
+            for image in product.productimage_set.all()],
 
                 'info'         :{
                 'meterial'     : product.product_info.meterial,
