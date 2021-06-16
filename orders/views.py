@@ -54,6 +54,7 @@ class CartView(View):
                     'order_id'        : carts.order.id,
                     'cart_id'         : carts.id,
                     'amount'          : carts.amount,
+                    'product_id'      : carts.product.id,
                     'korean_name'     : carts.product.korean_name,
                     'english_name'    : carts.product.english_name,
                     'delivery_charge' : carts.order.delivery_charge,
