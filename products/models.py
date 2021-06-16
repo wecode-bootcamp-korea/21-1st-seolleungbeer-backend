@@ -23,6 +23,7 @@ class Product(models.Model):
     description  = models.TextField()
     sub_category = models.ForeignKey('SubCategory', on_delete=CASCADE)
     product_info = models.OneToOneField('ProductInfo', on_delete=CASCADE)
+    main_image   = models.CharField(max_length=255)
 
     class Meta:
         db_table = 'products'
