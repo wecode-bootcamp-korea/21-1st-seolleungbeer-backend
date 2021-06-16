@@ -28,6 +28,7 @@ class ProductListView(View):
         subcategories = request.GET.get('subcategory')
 
         q = Q()
+
         if subcategories:
             q &= Q(sub_category__english_name=subcategories)
         elif category:
@@ -43,9 +44,8 @@ class ProductListView(View):
                 'korean_name'  : product.korean_name,
                 'english_name' : product.english_name,
                 'price'        : product.price,
-                'image'        : getattr(product.productimage_set.filter(image_type__type="1000*1000").first(),'image_url',None)
-            }
-            for product in products_in_page]
+                'image'        : product.main_image
+            } for product in products_in_page]
             
         return JsonResponse({'is_last_page':is_last_page, 'content':result_list}, status=200)
 
