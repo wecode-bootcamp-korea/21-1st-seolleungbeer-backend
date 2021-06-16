@@ -1,4 +1,6 @@
 import json, re, bcrypt, jwt
+from os import access
+from typing import AsyncContextManager
 
 from django.views           import View
 from django.http            import JsonResponse
@@ -83,7 +85,7 @@ class LoginView(View):
                 return JsonResponse({'message': 'INVALID_USER'}, status=401)
             
             access_token = jwt.encode({'user_id': db_email.id}, SECRET_KEY, ALGORITHM)
-            
+
             return JsonResponse({'token': access_token, 'message': 'SUCCESS'}, status=200)
 
         except KeyError:
