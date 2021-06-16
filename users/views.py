@@ -94,8 +94,8 @@ class AccountInfoView(View):
     @user_decorator
     def get(self,request):
         result = {
-            'name': request.user.name,
-            'email': request.user.email,
+            'name'  : request.user.name,
+            'email' : request.user.email,
             'mobile': request.user.mobile
         }
-        return JsonResponse(result,status=200)
+        return JsonResponse(result, status=200)

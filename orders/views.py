@@ -2,20 +2,11 @@ import json,uuid
 from json.decoder    import JSONDecodeError
 from copy            import deepcopy
 
-<<<<<<< HEAD
 from django.http     import JsonResponse
 from django.views    import View
-from django.db       import transaction,IntegrityError
-
-from .models         import Order,OrderItem,OrderStatus
-=======
-from json.decoder    import JSONDecodeError
-
-from django.http      import JsonResponse
-from django.views     import View
+from django.db       import IntegrityError,transaction
 
 from orders.models   import OrderStatus, Order, OrderItem
->>>>>>> main
 from products.models import Product
 from users.utils     import user_decorator
 
@@ -77,7 +68,6 @@ class CartView(View):
         except OrderItem.DoesNotExist:
             return JsonResponse({'message': 'NOTHING_IN_CART'}, status=400)
 
-<<<<<<< HEAD
 class PaymentView(View):
     @user_decorator
     def post(self,request):
@@ -87,24 +77,26 @@ class PaymentView(View):
                 new_order = Order.objects.create(
                     order_number        = uuid.uuid4(),
                     delivery_memo       = data.get('delivery_memo'),
-                    payment_information = data.get('payment_information'),
-                    payment_charge      = data.get('payment_charge'),
+                    payment_information = data['payment_information'],
+                    payment_charge      = data['payment_charge'],
                     user                = request.user,
                     order_status_id     = OrderStatus.PAIDED
                 )
 
-                for key,value in data['order_item'].items():
-                    item = OrderItem.objects.get(id=key)
+                for item_to_buy in data['order_item']:
+                    id              = item_to_buy['order_item_id']         
+                    amount          = item_to_buy['amount']
+                    item_in_payment = OrderItem.objects.get(id=id)
 
-                    if item.amount != value:
-                        item_in_cart        = deepcopy(item)
+                    if item_in_payment.amount != amount:
+                        item_in_cart        = deepcopy(item_in_payment)
                         item_in_cart.id     = None
-                        item_in_cart.amount = item.amount-value
+                        item_in_cart.amount = item_in_payment.amount-amount
                         item_in_cart.save()
 
-                    item.order  = new_order
-                    item.amount = value
-                    item.save()
+                    item_in_payment.order  = new_order
+                    item_in_payment.amount = amount
+                    item_in_payment.save()                              
 
                 return JsonResponse({'message':'SUCCESS'}, status=200)
 
@@ -114,20 +106,6 @@ class PaymentView(View):
             return JsonResponse({'message':'INTEGRITY ERROR'}, status=400)
         except JSONDecodeError:
             return JsonResponse({'message':'JSON DECODE ERROR'}, status=400)
-=======
-    @user_decorator
-    def put(self, request):
-        try:
-            data       = json.loads(request.body)
-            order_item = OrderItem.objects.filter(id__in=data['cart_item_id'])
-
-            order_item.delete()
-            
-            return JsonResponse({'message':'DELETE_SUCCESS'}, status=200)
-        
         except KeyError:
-            return JsonResponse({'message':'INVAILD_VALUE'}, status=400)
-        
-        except JSONDecodeError:
-            return JsonResponse({'message': 'JSON_DECODE_ERROR'}, status=400)
->>>>>>> main
+            return JsonResponse({'message':'KEY ERROR'}, status=400)
+      
