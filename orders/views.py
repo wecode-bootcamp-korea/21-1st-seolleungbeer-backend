@@ -1,10 +1,12 @@
 import json, uuid
 
+from json.decoder    import JSONDecodeError
+
 from django.http      import JsonResponse
 from django.views     import View
 
 from orders.models   import OrderStatus, Order, OrderItem
-from products.models import Product, ProductImage
+from products.models import Product
 from users.utils     import user_decorator
 
 class CartView(View):
@@ -64,3 +66,19 @@ class CartView(View):
             
         except OrderItem.DoesNotExist:
             return JsonResponse({'message': 'NOTHING_IN_CART'}, status=400)
+
+    @user_decorator
+    def put(self, request):
+        try:
+            data       = json.loads(request.body)
+            order_item = OrderItem.objects.filter(id__in=data['cart_item_id'])
+
+            order_item.delete()
+            
+            return JsonResponse({'message':'DELETE_SUCCESS'}, status=200)
+        
+        except KeyError:
+            return JsonResponse({'message':'INVAILD_VALUE'}, status=400)
+        
+        except JSONDecodeError:
+            return JsonResponse({'message': 'JSON_DECODE_ERROR'}, status=400)
