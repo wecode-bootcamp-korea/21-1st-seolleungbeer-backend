@@ -72,18 +72,25 @@ class CartView(View):
         try:
             data    = json.loads(request.body)
             user    = request.user
-            product = Product.objects.get(id=data['product_id'])
-            order   = Order.objects.get(user_id=user.id, order_status_id=OrderStatus.PENDING)
+            product = data['product_id']
 
-            if not OrderItem.objects.filter(order=order, product=product).exists():
+            if not Product.objects.filter(id=product).exists():
+                return JsonResponse({'message':'PRODUCT_DOES_NOT_EXIST'}, status=404)
+
+            if not OrderItem.objects.filter(order__user=user, product=product, order__order_status_id = OrderStatus.PENDING).exists():
                 return JsonResponse({'message':"PRODUCT_DOES_NOT_MATCH"},status=404)
 
-            order.orderitem_set.filter(order=order, product=product).update(amount=data['amount'])
+            order_item = OrderItem.objects.get(order__user=user, order__order_status_id=OrderStatus.PENDING, product_id=product)
+            order_item.amount=data['amount']
+            order_item.save()
 
-            return JsonResponse({'message':'CHANGE SUCCESS',"order_itme_id":order.orderitem_set.get(order=order,product=product).id},status=200)
+            return JsonResponse({'message':'CHANGE SUCCESS',"order_itme_id":order_item.id},status=200)
 
         except KeyError:
             return JsonResponse({'message':'KEY_ERROR'},status=400)
+
+
+
     def put(self, request):
         try:
             data       = json.loads(request.body)
