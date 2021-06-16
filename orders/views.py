@@ -28,13 +28,13 @@ class CartView(View):
             if OrderItem.objects.filter(order=order, product_id=product).exists():
                 current_amount = OrderItem.objects.get(order=order, product_id=product).amount
 
-            orderitem, is_created = OrderItem.objects.update_or_create(
+            order_item, is_created = OrderItem.objects.update_or_create(
                         order      = order,
                         product_id = product,
                         defaults   = {'amount':data['amount'] + current_amount},
                         )
 
-            return JsonResponse({'message':"SUCCESS", "id":orderitem.id},status=200)
+            return JsonResponse({'message':"SUCCESS", "order_item_id":order_item.id},status=200)
 
         except KeyError:
             return JsonResponse({'message':'KEY_ERROR'},status=400)
@@ -44,10 +44,10 @@ class CartView(View):
         try:
             user       = request.user
             order_item = OrderItem.objects.filter(
-                order__user            = user, 
+                order__user            = user,
                 order__order_status_id = OrderStatus.PENDING
             )
-            
+
             result     = [{
                     'order_id'        : carts.order.id,
                     'cart_id'         : carts.id,
@@ -61,6 +61,6 @@ class CartView(View):
                 } for carts in order_item]
 
             return JsonResponse({'message':'SUCCESS', 'result':result}, status=200)
-        
+            
         except OrderItem.DoesNotExist:
             return JsonResponse({'message': 'NOTHING_IN_CART'}, status=400)
