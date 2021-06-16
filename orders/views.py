@@ -56,7 +56,6 @@ class OrderView(View):
         except JSONDecodeError:
             return JsonResponse({'message':'JSON DECODE ERROR'}, status=400)
 
-
 class CartView(View):
     @user_decorator
     def get(self, request):
@@ -66,13 +65,16 @@ class CartView(View):
                 order__user            = user, 
                 order__order_status_id = OrderStatus.PENDING
             )
+            
             result     = [{
+                    'order_id'        : carts.order.id,
                     'cart_id'         : carts.id,
                     'amount'          : carts.amount,
                     'korean_name'     : carts.product.korean_name,
                     'english_name'    : carts.product.english_name,
                     'delivery_charge' : carts.order.delivery_charge,
                     'payment_charge'  : carts.product.price,
+                    'product_image'   : carts.product.main_image,
                     'delivery_method' : carts.order.delivery_method
                 } for carts in order_item]
 
