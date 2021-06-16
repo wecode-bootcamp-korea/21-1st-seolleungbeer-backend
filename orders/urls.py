@@ -1,8 +1,8 @@
 from django.urls import path
 
-from .views      import OrderView,CartView
+from .views      import PaymentView,CartView
 
 urlpatterns = [
-    path('/order', OrderView.as_view()),
+    path('/payment', PaymentView.as_view()),
     path('/cart', CartView.as_view())
 ]

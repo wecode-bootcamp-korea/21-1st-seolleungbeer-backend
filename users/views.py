@@ -1,12 +1,11 @@
 import json, re, bcrypt, jwt
-from os import access
-from typing import AsyncContextManager
 
 from django.views           import View
 from django.http            import JsonResponse
 
 from .models                import User
 from seolleungbeer.settings import SECRET_KEY, ALGORITHM
+from users.utils             import user_decorator
 
 password_regx = re.compile('^.*(?=^.{10,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$')
 email_regex   = re.compile('^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
@@ -90,3 +89,13 @@ class LoginView(View):
 
         except KeyError:
             return JsonResponse({'message': 'KEY_ERROR'}, status=400)
+
+class AccountInfoView(View):
+    @user_decorator
+    def get(self,request):
+        result = {
+            'name': request.user.name,
+            'email': request.user.email,
+            'mobile': request.user.mobile
+        }
+        return JsonResponse(result,status=200)

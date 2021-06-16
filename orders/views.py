@@ -7,55 +7,8 @@ from django.views    import View
 from django.db       import transaction,IntegrityError
 
 from .models         import Order,OrderItem,OrderStatus
-from products.models import Product, ProductImage
+from products.models import Product
 from users.utils     import user_decorator
-
-
-class OrderView(View):
-    @user_decorator
-    def get(self,request):
-        result = {
-            'name': request.user.name,
-            'email': request.user.email,
-            'mobile': request.user.mobile
-        }
-        return JsonResponse(result,status=200)
-
-    @user_decorator
-    def post(self,request):
-        try:
-            with transaction.atomic():
-                data      = json.loads(request.body)
-                new_order = Order.objects.create(
-                    order_number        = uuid.uuid4(),
-                    delivery_memo       = data['delivery_memo'],
-                    payment_information = data['payment_information'],
-                    payment_charge      = data['payment_charge'],
-                    user                = request.user,
-                    order_status_id     = 1
-                )
-
-                for key,value in data['order_item'].items():
-                    item = OrderItem.objects.get(id=key)
-
-                    if item.amount != value:
-                        item_in_cart        = deepcopy(item)
-                        item_in_cart.id     = None
-                        item_in_cart.amount = item.amount-value
-                        item_in_cart.save()
-
-                    item.order  = new_order
-                    item.amount = value
-                    item.save()
-
-                return JsonResponse({'message':'SUCCESS'}, status=200)
-
-        except OrderItem.DoesNotExist:
-            return JsonResponse({'message':'DOES NOT EXIST'}, status=400)
-        except IntegrityError:
-            return JsonResponse({'message':'INTEGRITY ERROR'}, status=400)
-        except JSONDecodeError:
-            return JsonResponse({'message':'JSON DECODE ERROR'}, status=400)
 
 class CartView(View):
     @user_decorator
@@ -114,3 +67,40 @@ class CartView(View):
             
         except OrderItem.DoesNotExist:
             return JsonResponse({'message': 'NOTHING_IN_CART'}, status=400)
+
+class PaymentView(View):
+    @user_decorator
+    def post(self,request):
+        try:
+            with transaction.atomic():
+                data      = json.loads(request.body)
+                new_order = Order.objects.create(
+                    order_number        = uuid.uuid4(),
+                    delivery_memo       = data.get('delivery_memo'),
+                    payment_information = data.get('payment_information'),
+                    payment_charge      = data.get('payment_charge'),
+                    user                = request.user,
+                    order_status_id     = OrderStatus.PAIDED
+                )
+
+                for key,value in data['order_item'].items():
+                    item = OrderItem.objects.get(id=key)
+
+                    if item.amount != value:
+                        item_in_cart        = deepcopy(item)
+                        item_in_cart.id     = None
+                        item_in_cart.amount = item.amount-value
+                        item_in_cart.save()
+
+                    item.order  = new_order
+                    item.amount = value
+                    item.save()
+
+                return JsonResponse({'message':'SUCCESS'}, status=200)
+
+        except OrderItem.DoesNotExist:
+            return JsonResponse({'message':'DOES NOT EXIST'}, status=400)
+        except IntegrityError:
+            return JsonResponse({'message':'INTEGRITY ERROR'}, status=400)
+        except JSONDecodeError:
+            return JsonResponse({'message':'JSON DECODE ERROR'}, status=400)
