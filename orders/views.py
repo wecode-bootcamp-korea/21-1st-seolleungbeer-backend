@@ -1,60 +1,66 @@
-from django.shortcuts import render
+import json, uuid
 
-# Create your views here.
-import json
 from django.http      import JsonResponse
 from django.views     import View
-from django.db.models import Q 
-from orders.models    import OrderStatus, Order, OrderItem
-from users.models     import User
-from products.models  import Product
-from users.utils      import user_decorator
+
+from orders.models   import OrderStatus, Order, OrderItem
+from products.models import Product, ProductImage
+from users.utils     import user_decorator
 
 class CartView(View):
     @user_decorator
     def post(self, request):
         try:
-            data = json.loads(request.body)
+            data           = json.loads(request.body)
             user           = request.user
-            order_status   = OrderStatus.objects.get(status="장바구니")
-            product        = Product.objects.get(korean_name=data['korean_name'])
+            product        = data['product_id']
             current_amount = 0
-            if not Order.objects.filter(order_number=data['order_number']).exists():
-                current_charge = 0
-            else:
-                current_charge = int(float((Order.objects.get(order_number=data['order_number']).payment_charge)))
-            Order.objects.update_or_create(
-                order_number        = data['order_number'],
-                delivery_charge     = data['delivery_charge'],
-                delivery_method     = data['delivery_method'],
-                delivery_memo       = data['delivery_memo'],
-                payment_information = data['payment_information'],
-                defaults            = {'payment_charge': product.price*data['amount']+current_charge},
-                user                = user,
-                order_status        = order_status
-            )
-            order = Order.objects.get(order_number=data['order_number'])
-            if OrderItem.objects.filter(Q(order=order) & Q(product=product)):
-                current_amount = OrderItem.objects.get(order=order, product = product).amount
-            OrderItem.objects.update_or_create(
-                order    = order,
-                product  = product,
-                defaults = {'amount':data['amount'] + current_amount},
-                )
-            return JsonResponse({'message':"SUCCESS"},status=200)
+
+            if not Product.objects.filter(id=product).exists():
+                return JsonResponse({'message':'PRODUCT_DOES_NOT_EXIST'}, status=400)
+
+            order, is_created = Order.objects.get_or_create(
+                        user            = user,
+                        order_status_id = OrderStatus.PENDING,
+                        defaults        = {'order_number':uuid.uuid4()}
+                    )
+
+            if OrderItem.objects.filter(order=order, product_id=product).exists():
+                current_amount = OrderItem.objects.get(order=order, product_id=product).amount
+
+            order_item, is_created = OrderItem.objects.update_or_create(
+                        order      = order,
+                        product_id = product,
+                        defaults   = {'amount':data['amount'] + current_amount},
+                        )
+
+            return JsonResponse({'message':"SUCCESS", "order_item_id":order_item.id},status=200)
+
         except KeyError:
             return JsonResponse({'message':'KEY_ERROR'},status=400)
-        except Product.DoesNotExist:
-            return JsonResponse({'message':'UNREGISTERED_PRODUCT'}, status=400)
+
     @user_decorator
-    def patch(self, request):
+    def get(self, request):
         try:
-            data = json.loads(request.body)
-            user = request.user
-            order_status   = OrderStatus.objects.get(status="장바구니")
-            product        = Product.objects.get(korean_name=data['korean_name'])
-            order = Order.objects.get(user=user,order_status=order_status)
-            order.orderitem_set.filter(order=order,product=product).update(amount=data['amount'])
-            return JsonResponse({'message':'수량변경성공'},status=200)
-        except KeyError:
-            return JsonResponse({'message':'KEY_ERROR'},status=400)
+            user       = request.user
+            order_item = OrderItem.objects.filter(
+                order__user            = user,
+                order__order_status_id = OrderStatus.PENDING
+            )
+
+            result     = [{
+                    'order_id'        : carts.order.id,
+                    'cart_id'         : carts.id,
+                    'amount'          : carts.amount,
+                    'korean_name'     : carts.product.korean_name,
+                    'english_name'    : carts.product.english_name,
+                    'delivery_charge' : carts.order.delivery_charge,
+                    'payment_charge'  : carts.product.price,
+                    'product_image'   : carts.product.main_image,
+                    'delivery_method' : carts.order.delivery_method
+                } for carts in order_item]
+
+            return JsonResponse({'message':'SUCCESS', 'result':result}, status=200)
+            
+        except OrderItem.DoesNotExist:
+            return JsonResponse({'message': 'NOTHING_IN_CART'}, status=400)
