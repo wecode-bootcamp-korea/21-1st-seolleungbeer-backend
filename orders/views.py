@@ -68,7 +68,7 @@ class CartView(View):
             return JsonResponse({'message': 'NOTHING_IN_CART'}, status=400)
 
     @user_decorator
-    def delete(self, request):
+    def put(self, request):
         try:
             data       = json.loads(request.body)
             order_item = OrderItem.objects.filter(id__in=data['cart_item_id'])
