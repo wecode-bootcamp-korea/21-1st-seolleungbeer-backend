@@ -10,16 +10,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RenameField(
-            model_name='category',
-            old_name='name',
-            new_name='english_name',
-        ),
-        migrations.RenameField(
-            model_name='subcategory',
-            old_name='name',
-            new_name='english_name',
-        ),
+
         migrations.AddField(
             model_name='subcategory',
             name='korean_name',
