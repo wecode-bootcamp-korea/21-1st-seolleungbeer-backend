@@ -1,5 +1,7 @@
 import json, uuid
 
+from json.decoder    import JSONDecodeError
+
 from django.http      import JsonResponse
 from django.views     import View
 
@@ -78,5 +80,5 @@ class CartView(View):
         except KeyError:
             return JsonResponse({'message':'INVAILD_VALUE'}, status=400)
         
-        except ValueError:
+        except JSONDecodeError:
             return JsonResponse({'message': 'JSON_DECODE_ERROR'}, status=400)
