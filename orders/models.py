@@ -17,6 +17,7 @@ class Order(models.Model):
         db_table = 'orders'
 
 class OrderStatus(models.Model):
+    PENDING = 1
     status = models.CharField(max_length=50)
 
     class Meta:
