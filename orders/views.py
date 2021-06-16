@@ -21,7 +21,7 @@ class CartView(View):
             if not Product.objects.filter(id=product).exists():
                 return JsonResponse({'message':'PRODUCT_DOES_NOT_EXIST'}, status=400)
 
-            order, created = Order.objects.get_or_create(
+            order, is_created = Order.objects.get_or_create(
                         user            = user,
                         order_status_id = OrderStatus.PENDING,
                         defaults        = {'order_number':uuid.uuid4()}
@@ -29,24 +29,18 @@ class CartView(View):
 
             if OrderItem.objects.filter(order=order, product_id=product).exists():
                 current_amount = OrderItem.objects.get(order=order, product_id=product).amount
-                
-            orderitem, created = OrderItem.objects.update_or_create(
+
+            orderitem, is_created = OrderItem.objects.update_or_create(
                         order      = order,
                         product_id = product,
                         defaults   = {'amount':data['amount'] + current_amount},
                         )
 
-            return JsonResponse({'message':"SUCCESS", "order_number":order.order_number, "id":orderitem.id},status=200)
+            return JsonResponse({'message':"SUCCESS", "id":orderitem.id},status=200)
 
         except KeyError:
             return JsonResponse({'message':'KEY_ERROR'},status=400)
-from django.views    import View
-from django.http     import JsonResponse
 
-from .models         import OrderItem, OrderStatus
-from users.utils     import user_decorator
-
-class CartView(View):
     @user_decorator
     def get(self, request):
         try:
