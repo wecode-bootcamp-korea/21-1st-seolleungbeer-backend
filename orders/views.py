@@ -1,4 +1,5 @@
 import json,uuid
+from json.decoder import JSONDecodeError
 from copy import deepcopy
 
 from django.http  import JsonResponse
@@ -52,6 +53,9 @@ class OrderView(View):
             return JsonResponse({'message':'DOES NOT EXIST'}, status=400)
         except IntegrityError:
             return JsonResponse({'message':'INTEGRITY ERROR'}, status=400)
+        except JSONDecodeError:
+            return JsonResponse({'message':'JSON DECODE ERROR'}, status=400)
+
 
 class CartView(View):
     @user_decorator
