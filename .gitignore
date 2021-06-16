@@ -2,6 +2,8 @@
 # Created by https://www.toptal.com/developers/gitignore/api/python,django,linux,macos,visualstudiocode,zsh
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,django,linux,macos,visualstudiocode,zsh
 
+scripts.py
+seolleungbeer_product
 {
     "python.pythonPath": "/home/hwang/miniconda3/envs/wecode/bin/python"
 }
