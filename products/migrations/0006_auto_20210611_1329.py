@@ -16,10 +16,4 @@ class Migration(migrations.Migration):
             field=models.CharField(max_length=50, unique=True,null=True),
             preserve_default=False,
         ),
-        migrations.AddField(
-            model_name='subcategory',
-            name='korean_name',
-            field=models.CharField(max_length=50, unique=True,null=True),
-            preserve_default=False,
-        ),
     ]
