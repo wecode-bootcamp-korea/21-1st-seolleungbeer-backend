@@ -53,12 +53,13 @@ class CartView(View):
             result     = [{
                     'order_id'        : order_item.order.id,
                     'order_item_id'   : order_item.id,
+                    'product_id'      : order_items.Product.id,
                     'amount'          : order_item.amount,
                     'korean_name'     : order_item.product.korean_name,
                     'english_name'    : order_item.product.english_name,
                     'delivery_charge' : order_item.order.delivery_charge,
                     'payment_charge'  : order_item.product.price,
-                    'main_image'   : order_item.product.main_image,
+                    'main_image'      : order_item.product.main_image,
                     'delivery_method' : order_item.order.delivery_method
                 } for order_item in order_items]
 
