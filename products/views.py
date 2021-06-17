@@ -14,7 +14,7 @@ class CategoryListView(View):
     def get(self, request):
         categories = Category.objects.all()
         result     = {}
-        print(categories)
+
         for category in categories:
             result[category.english_name] = [subcategory.english_name for subcategory in category.subcategory_set.all()]
 

@@ -68,7 +68,7 @@ class CartView(View):
         except OrderItem.DoesNotExist:
             return JsonResponse({'message': 'NOTHING_IN_CART'}, status=400)
 
-class PaymentView(View):
+class OrderView(View):
     @user_decorator
     def post(self,request):
         try:
@@ -84,19 +84,19 @@ class PaymentView(View):
                 )
 
                 for item_to_buy in data['order_item']:
-                    id              = item_to_buy['order_item_id']         
-                    amount          = item_to_buy['amount']
-                    item_in_payment = OrderItem.objects.get(id=id)
+                    id           = item_to_buy['order_item_id']         
+                    amount       = item_to_buy['amount']
+                    item_in_cart = OrderItem.objects.get(id=id)
 
-                    if item_in_payment.amount != amount:
-                        item_in_cart        = deepcopy(item_in_payment)
-                        item_in_cart.id     = None
-                        item_in_cart.amount = item_in_payment.amount-amount
+                    if item_in_cart.amount != amount:
+                        item_in_cart.amount -= amount
                         item_in_cart.save()
-
-                    item_in_payment.order  = new_order
-                    item_in_payment.amount = amount
-                    item_in_payment.save()                              
+                        OrderItem.objects.create(
+                            order=new_order, amount=amount, product=item_in_cart.product
+                            )
+                    else:
+                        item_in_cart.order = new_order
+                        item_in_cart.save()
 
                 return JsonResponse({'message':'SUCCESS'}, status=200)
 
