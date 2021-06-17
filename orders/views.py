@@ -33,7 +33,7 @@ class CartView(View):
             order_item, is_created = OrderItem.objects.update_or_create(
                         order      = order,
                         product_id = product,
-                        defaults   = {'amount':data['amount'] + current_amount},
+                        defaults   = {'amount':int(data['amount']) + current_amount},
                         )
 
             return JsonResponse({'message':"SUCCESS", "order_item_id":order_item.id},status=200)
