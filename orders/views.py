@@ -68,6 +68,29 @@ class CartView(View):
             return JsonResponse({'message': 'NOTHING_IN_CART'}, status=400)
 
     @user_decorator
+    def patch(self, request):
+        try:
+            data    = json.loads(request.body)
+            user    = request.user
+            product = data['product_id']
+
+            if not Product.objects.filter(id=product).exists():
+                return JsonResponse({'message':'PRODUCT_DOES_NOT_EXIST'}, status=404)
+
+            if not OrderItem.objects.filter(order__user=user, product=product, order__order_status_id = OrderStatus.PENDING).exists():
+                return JsonResponse({'message':"PRODUCT_DOES_NOT_MATCH"},status=404)
+
+            order_item = OrderItem.objects.get(order__user=user, order__order_status_id=OrderStatus.PENDING, product_id=product)
+            order_item.amount=data['amount']
+            order_item.save()
+
+            return JsonResponse({'message':'CHANGE SUCCESS',"order_itme_id":order_item.id},status=200)
+
+        except KeyError:
+            return JsonResponse({'message':'KEY_ERROR'},status=400)
+
+
+
     def put(self, request):
         try:
             data       = json.loads(request.body)
