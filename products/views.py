@@ -8,17 +8,17 @@ from django.http           import JsonResponse
 from django.core.paginator import EmptyPage
 from django.db.models      import Q, When, Case, Exists,Value
 
-from .models import Category, Product
+from .models import Category, Product, SubCategory
 
 class CategoryListView(View):
     def get(self, request):
         categories = Category.objects.all()
         result     = {}
-
+        print(categories)
         for category in categories:
-            result[category.english_name] = [sub.english_name for sub in category.sub_category_set.all()]
+            result[category.english_name] = [subcategory.english_name for subcategory in category.subcategory_set.all()]
 
-        return JsonResponse(result, status=200)
+        return JsonResponse(result, status=200,safe=False)
 
 class ProductListView(View):
     def get(self, request):

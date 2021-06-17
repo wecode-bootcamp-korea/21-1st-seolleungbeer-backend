@@ -34,7 +34,7 @@ class CartView(View):
             order_item, is_created = OrderItem.objects.update_or_create(
                         order      = order,
                         product_id = product,
-                        defaults   = {'amount':data['amount'] + current_amount},
+                        defaults   = {'amount':data['amount'] + current_amount}
                         )
 
             return JsonResponse({'message':"SUCCESS", "order_item_id":order_item.id},status=200)
@@ -74,6 +74,7 @@ class PaymentView(View):
         try:
             with transaction.atomic():
                 data      = json.loads(request.body)
+                print(data)
                 new_order = Order.objects.create(
                     order_number        = uuid.uuid4(),
                     delivery_memo       = data.get('delivery_memo'),
