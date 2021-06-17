@@ -1,9 +1,9 @@
-import json, uuid
-
+import json,uuid
 from json.decoder    import JSONDecodeError
 
 from django.http     import JsonResponse
 from django.views    import View
+from django.db       import IntegrityError,transaction
 
 from orders.models   import OrderStatus, Order, OrderItem
 from products.models import Product
@@ -90,19 +90,64 @@ class CartView(View):
         except KeyError:
             return JsonResponse({'message':'KEY_ERROR'},status=400)
 
-
-
+    @user_decorator
     def put(self, request):
         try:
             data       = json.loads(request.body)
             order_item = OrderItem.objects.filter(id__in=data['order_item_id'])
 
             order_item.delete()
-            
+
             return JsonResponse({'message':'DELETE_SUCCESS'}, status=200)
-        
+
         except KeyError:
             return JsonResponse({'message':'INVAILD_VALUE'}, status=400)
-        
+
         except JSONDecodeError:
             return JsonResponse({'message': 'JSON_DECODE_ERROR'}, status=400)
+
+class OrderView(View):
+    @user_decorator
+    def post(self,request):
+        try:
+            with transaction.atomic():
+                data      = json.loads(request.body)
+                new_order = Order.objects.create(
+                    order_number        = uuid.uuid4(),
+                    delivery_memo       = data.get('delivery_memo'),
+                    payment_information = data['payment_information'],
+                    payment_charge      = data['payment_charge'],
+                    user                = request.user,
+                    order_status_id     = OrderStatus.PAIDED
+                )
+
+                for item_to_buy in data['order_item']:
+                    id           = item_to_buy['order_item_id']         
+                    amount       = item_to_buy['amount']
+                    item_in_cart = OrderItem.objects.get(id=id)
+
+                    if item_in_cart.amount != amount:
+                        item_in_cart.amount -= amount
+                        item_in_cart.save()
+                        OrderItem.objects.create(
+                            order   = new_order, 
+                            amount  = amount,
+                            product = item_in_cart.product
+                        )
+                    else:
+                        item_in_cart.order = new_order
+                        item_in_cart.save()
+
+                return JsonResponse({'message':'SUCCESS'}, status=200)
+
+        except OrderItem.DoesNotExist:
+            return JsonResponse({'message':'DOES NOT EXIST'}, status=400)
+
+        except IntegrityError:
+            return JsonResponse({'message':'INTEGRITY ERROR'}, status=400)
+
+        except JSONDecodeError:
+            return JsonResponse({'message':'JSON DECODE ERROR'}, status=400)
+
+        except KeyError:
+            return JsonResponse({'message':'KEY ERROR'}, status=400)

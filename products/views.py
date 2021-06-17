@@ -16,9 +16,9 @@ class CategoryListView(View):
         result     = {}
 
         for category in categories:
-            result[category.english_name] = [sub.english_name for sub in category.sub_category_set.all()]
+            result[category.english_name] = [subcategory.english_name for subcategory in category.subcategory_set.all()]
 
-        return JsonResponse(result, status=200)
+        return JsonResponse(result, status=200,safe=False)
 
 class ProductListView(View):
     def get(self, request):

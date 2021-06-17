@@ -5,6 +5,7 @@ from django.http            import JsonResponse
 
 from .models                import User
 from seolleungbeer.settings import SECRET_KEY, ALGORITHM
+from users.utils            import user_decorator
 
 password_regx = re.compile('^.*(?=^.{10,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$')
 email_regex   = re.compile('^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
@@ -83,8 +84,18 @@ class LoginView(View):
                 return JsonResponse({'message':'INVALID_USER'}, status=401)
             
             access_token = jwt.encode({'user_id': db_email.id}, SECRET_KEY, ALGORITHM)
-            
+
             return JsonResponse({'token': access_token, 'message': 'SUCCESS'}, status=200)
 
         except KeyError:
             return JsonResponse({'message': 'KEY_ERROR'}, status=400)
+
+class AccountView(View):
+    @user_decorator
+    def get(self,request):
+        result = {
+            'name'  : request.user.name,
+            'email' : request.user.email,
+            'mobile': request.user.mobile
+        }
+        return JsonResponse(result, status=200)
