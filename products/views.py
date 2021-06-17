@@ -40,11 +40,11 @@ class ProductListView(View):
 
         result_list = [
             {
-                'id'           : product.id,
+                'product_id'   : product.id,
                 'korean_name'  : product.korean_name,
                 'english_name' : product.english_name,
                 'price'        : product.price,
-                'image'        : product.main_image
+                'main_image'   : product.main_image
             } for product in products_in_page]
             
         return JsonResponse({'is_last_page':is_last_page, 'content':result_list}, status=200)

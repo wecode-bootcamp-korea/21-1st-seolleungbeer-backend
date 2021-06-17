@@ -44,24 +44,24 @@ class CartView(View):
     @user_decorator
     def get(self, request):
         try:
-            user       = request.user
-            order_item = OrderItem.objects.filter(
+            user        = request.user
+            order_items = OrderItem.objects.filter(
                 order__user            = user,
                 order__order_status_id = OrderStatus.PENDING
             )
 
             result     = [{
-                    'order_id'        : carts.order.id,
-                    'cart_id'         : carts.id,
-                    'amount'          : carts.amount,
-                    'product_id'      : carts.product.id,
-                    'korean_name'     : carts.product.korean_name,
-                    'english_name'    : carts.product.english_name,
-                    'delivery_charge' : carts.order.delivery_charge,
-                    'payment_charge'  : carts.product.price,
-                    'product_image'   : carts.product.main_image,
-                    'delivery_method' : carts.order.delivery_method
-                } for carts in order_item]
+                    'order_id'        : order_item.order.id,
+                    'order_item_id'   : order_item.id,
+                    'product_id'      : order_items.Product.id,
+                    'amount'          : order_item.amount,
+                    'korean_name'     : order_item.product.korean_name,
+                    'english_name'    : order_item.product.english_name,
+                    'delivery_charge' : order_item.order.delivery_charge,
+                    'payment_charge'  : order_item.product.price,
+                    'main_image'      : order_item.product.main_image,
+                    'delivery_method' : order_item.order.delivery_method
+                } for order_item in order_items]
 
             return JsonResponse({'message':'SUCCESS', 'result':result}, status=200)
             
@@ -72,7 +72,7 @@ class CartView(View):
     def put(self, request):
         try:
             data       = json.loads(request.body)
-            order_item = OrderItem.objects.filter(id__in=data['cart_item_id'])
+            order_item = OrderItem.objects.filter(id__in=data['order_item_id'])
 
             order_item.delete()
             
