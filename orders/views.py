@@ -2,8 +2,8 @@ import json, uuid
 
 from json.decoder    import JSONDecodeError
 
-from django.http      import JsonResponse
-from django.views     import View
+from django.http     import JsonResponse
+from django.views    import View
 
 from orders.models   import OrderStatus, Order, OrderItem
 from products.models import Product
@@ -66,26 +66,27 @@ class CartView(View):
             return JsonResponse({'message':'SUCCESS', 'result':result}, status=200)
             
         except OrderItem.DoesNotExist:
-            return JsonResponse({'message': 'NOTHING_IN_CART'}, status=400)
+            return JsonResponse({'message':'NOTHING_IN_CART'}, status=400)
 
     @user_decorator
     def patch(self, request):
         try:
-            data    = json.loads(request.body)
-            user    = request.user
-            product = data['product_id']
+            data       = json.loads(request.body)
+            user       = request.user
+            order_item = data['order_item_id']
 
-            if not Product.objects.filter(id=product).exists():
-                return JsonResponse({'message':'PRODUCT_DOES_NOT_EXIST'}, status=404)
+            if not OrderItem.objects.filter(id=order_item, order__user=user).exists():
+                return JsonResponse({'message':'NO_PRODUCT_IN_CART'}, status=404)
 
-            if not OrderItem.objects.filter(order__user=user, product=product, order__order_status_id = OrderStatus.PENDING).exists():
-                return JsonResponse({'message':"PRODUCT_DOES_NOT_MATCH"},status=404)
+            update_item = OrderItem.objects.get(
+                    order__user            = user,
+                    order__order_status_id = OrderStatus.PENDING,
+                    id                     = order_item
+            )
+            update_item.amount=data['amount']
+            update_item.save()
 
-            order_item = OrderItem.objects.get(order__user=user, order__order_status_id=OrderStatus.PENDING, product_id=product)
-            order_item.amount=data['amount']
-            order_item.save()
-
-            return JsonResponse({'message':'CHANGE SUCCESS',"order_itme_id":order_item.id},status=200)
+            return JsonResponse({'message':'CHANGE SUCCESS'},status=200)
 
         except KeyError:
             return JsonResponse({'message':'KEY_ERROR'},status=400)
