@@ -95,7 +95,7 @@ class CartView(View):
     def put(self, request):
         try:
             data       = json.loads(request.body)
-            order_item = OrderItem.objects.filter(id__in=data['cart_item_id'])
+            order_item = OrderItem.objects.filter(id__in=data['order_item_id'])
 
             order_item.delete()
 
@@ -131,8 +131,10 @@ class OrderView(View):
                         item_in_cart.amount -= amount
                         item_in_cart.save()
                         OrderItem.objects.create(
-                            order=new_order, amount=amount, product=item_in_cart.product
-                            )
+                            order   = new_order, 
+                            amount  = amount,
+                            product = item_in_cart.product
+                        )
                     else:
                         item_in_cart.order = new_order
                         item_in_cart.save()
@@ -150,4 +152,3 @@ class OrderView(View):
 
         except KeyError:
             return JsonResponse({'message':'KEY ERROR'}, status=400)
-      
