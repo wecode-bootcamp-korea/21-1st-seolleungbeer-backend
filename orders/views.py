@@ -1,6 +1,5 @@
 import json,uuid
 from json.decoder    import JSONDecodeError
-from copy            import deepcopy
 
 from django.http     import JsonResponse
 from django.views    import View

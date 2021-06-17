@@ -8,7 +8,7 @@ from django.http           import JsonResponse
 from django.core.paginator import EmptyPage
 from django.db.models      import Q, When, Case, Exists,Value
 
-from .models import Category, Product, SubCategory
+from .models import Category, Product
 
 class CategoryListView(View):
     def get(self, request):
