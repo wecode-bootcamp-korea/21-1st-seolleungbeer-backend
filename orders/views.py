@@ -54,12 +54,13 @@ class CartView(View):
             result     = [{
                     'order_id'        : order_item.order.id,
                     'order_item_id'   : order_item.id,
+                    'product_id'      : order_items.Product.id,
                     'amount'          : order_item.amount,
                     'korean_name'     : order_item.product.korean_name,
                     'english_name'    : order_item.product.english_name,
                     'delivery_charge' : order_item.order.delivery_charge,
                     'payment_charge'  : order_item.product.price,
-                    'main_image'   : order_item.product.main_image,
+                    'main_image'      : order_item.product.main_image,
                     'delivery_method' : order_item.order.delivery_method
                 } for order_item in order_items]
 
@@ -67,6 +68,44 @@ class CartView(View):
             
         except OrderItem.DoesNotExist:
             return JsonResponse({'message': 'NOTHING_IN_CART'}, status=400)
+
+    @user_decorator
+    def patch(self, request):
+        try:
+            data    = json.loads(request.body)
+            user    = request.user
+            product = data['product_id']
+
+            if not Product.objects.filter(id=product).exists():
+                return JsonResponse({'message':'PRODUCT_DOES_NOT_EXIST'}, status=404)
+
+            if not OrderItem.objects.filter(order__user=user, product=product, order__order_status_id = OrderStatus.PENDING).exists():
+                return JsonResponse({'message':"PRODUCT_DOES_NOT_MATCH"},status=404)
+
+            order_item = OrderItem.objects.get(order__user=user, order__order_status_id=OrderStatus.PENDING, product_id=product)
+            order_item.amount=data['amount']
+            order_item.save()
+
+            return JsonResponse({'message':'CHANGE SUCCESS',"order_itme_id":order_item.id},status=200)
+
+        except KeyError:
+            return JsonResponse({'message':'KEY_ERROR'},status=400)
+
+    @user_decorator
+    def put(self, request):
+        try:
+            data       = json.loads(request.body)
+            order_item = OrderItem.objects.filter(id__in=data['cart_item_id'])
+
+            order_item.delete()
+
+            return JsonResponse({'message':'DELETE_SUCCESS'}, status=200)
+
+        except KeyError:
+            return JsonResponse({'message':'INVAILD_VALUE'}, status=400)
+
+        except JSONDecodeError:
+            return JsonResponse({'message': 'JSON_DECODE_ERROR'}, status=400)
 
 class OrderView(View):
     @user_decorator
@@ -102,10 +141,13 @@ class OrderView(View):
 
         except OrderItem.DoesNotExist:
             return JsonResponse({'message':'DOES NOT EXIST'}, status=400)
+
         except IntegrityError:
             return JsonResponse({'message':'INTEGRITY ERROR'}, status=400)
+
         except JSONDecodeError:
             return JsonResponse({'message':'JSON DECODE ERROR'}, status=400)
+
         except KeyError:
             return JsonResponse({'message':'KEY ERROR'}, status=400)
       
