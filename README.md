@@ -4,7 +4,7 @@
 
 ## 프로젝트 요약
 - **제주맥주**를 모티브로 하여 '선릉맥주'라는 가상의 브랜드, 가상의 상품 기획을 더해 cloning.
-- **진행 기간**: 2021.06.04 ~ 06.18
+- **진행 기간**: 2021.06.07 ~ 06.18
 - **기획 포인트**
 1. '선릉맥주' 라는 가상의 브랜드 아래, 선릉과 어울리는 각종 술과 음식,굿즈를 판매하는 커머스 서비스
 2. '선릉맥주'란?
@@ -26,7 +26,7 @@ Back - 김경천,김정연,황복실
 
 # 적용 기술 및 구현 기능
 ## 기술 스택
-- Front-End : 
+- Front-End : React, React Router, Sass, Dompurify, React Daum Postcode, JavaScript, CRA
 - Back-End : Python, Django, My SQL
 - Communication Tool : Trello, Git, GitHub, Slack
 ## 구현 기능 상세
