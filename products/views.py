@@ -35,7 +35,9 @@ class ProductListView(View):
             q &= Q(sub_category__category__english_name=category)
 
         products         = Product.objects.filter(q).order_by('id')
+        print(products)
         products_in_page = products[offset:(offset+limit)]
+        print(products_in_page)
         is_last_page     = products.count() <= (offset+limit)
 
         result_list = [
