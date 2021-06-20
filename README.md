@@ -31,7 +31,7 @@ Back - 김경천,김정연,황복실
 - Communication Tool : Trello, Git, GitHub, Slack
 ## 구현 기능 상세
 ### 데이터 모델링(김경천,김정연,황복실)
-https://raw.githubusercontent.com/wecode-bootcamp-korea/21-1st-seolleungbeer-backend/main/data_modeling.png
+![alt text](https://raw.githubusercontent.com/wecode-bootcamp-korea/21-1st-seolleungbeer-backend/main/data_modeling.png)
 ### 회원가입 페이지 (황복실)
 1. 이메일 중복 체크 및 정규식 사용하여 형식 체크
 2. 전화번호 중복 체크 및 정규식 사용하여 형식 체크
